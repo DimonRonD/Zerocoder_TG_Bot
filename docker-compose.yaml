@@ -1,6 +1,7 @@
 services:
   bot-tg:
     build: .
+    restart: unless-stopped
     command: >
       sh -c "python main_open_ai.py"
     volumes:
