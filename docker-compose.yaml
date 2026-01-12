@@ -1,0 +1,15 @@
+services:
+  bot-tg:
+    build: .
+    command: >
+      sh -c "python main_open_ai.py"
+    volumes:
+      - .:/
+
+    environment:
+      PYTHONPATH: /
+
+
+
+
+
