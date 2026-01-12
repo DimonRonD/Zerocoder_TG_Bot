@@ -5,10 +5,10 @@ services:
     command: >
       sh -c "python main_open_ai.py"
     volumes:
-      - .:/
+      - .:/ZeroBot
 
     environment:
-      PYTHONPATH: /
+      PYTHONPATH: /ZeroBot
 
 
 
