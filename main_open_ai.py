@@ -9,7 +9,7 @@ from src import OPENAI_API_KEY, ASSISTANT_ID, TELEGRAM_TOKEN  # Импортир
 client = OpenAI(api_key=OPENAI_API_KEY)  # Создаём клиент OpenAI, передавая API-ключ
 
 # --- Логирование ---
-logging.basicConfig(level=logging.INFO)  # Устанавливаем базовый уровень логирования — INFO
+logging.basicConfig(level=logging.WARNING)  # Устанавливаем базовый уровень логирования — INFO
 logger = logging.getLogger(__name__)  # Получаем объект логгера для текущего модуля
 user_threads = {}  # Создаём словарь для хранения данных потоков пользователей
 
