@@ -10,8 +10,6 @@ RUN pip install -r requirements.txt
 
 COPY . /
 
-RUN python main_open_ai.py
-
 EXPOSE 8000
 
 ENV PYTHONUNBUFFERED=1
