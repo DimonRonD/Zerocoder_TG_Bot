@@ -9,7 +9,7 @@ from src import OPENAI_API_KEY, ASSISTANT_ID, TELEGRAM_TOKEN  # Импортир
 client = OpenAI(api_key=OPENAI_API_KEY)  # Создаём клиент OpenAI, передавая API-ключ
 
 # --- Логирование ---
-logging.basicConfig(level=logging.CRITICAL)  # Устанавливаем базовый уровень логирования — INFO
+logging.basicConfig(level=logging.INFO)  # Устанавливаем базовый уровень логирования — INFO
 logger = logging.getLogger(__name__)  # Получаем объект логгера для текущего модуля
 user_threads = {}  # Создаём словарь для хранения данных потоков пользователей
 
@@ -59,17 +59,24 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         # Получаем список всех сообщений в потоке
         messages = client.beta.threads.messages.list(thread_id=thread_id)
+        # В API ассистентов сообщения приходят в порядке: сначала новые. [web:14]
+        last_assistant_message = None
+        for msg in messages.data:
+            if msg.role == "assistant" and msg.run_id == run.id:
+                last_assistant_message = msg
+                break  # первый найденный — самый свежий [web:10][web:14]
 
-        # Извлекаем ответы ассистента из сообщений потока
-        response_texts = [
-            msg.content[0].text.value
-            for msg in reversed(messages.data)
-            if msg.role == "assistant"
-        ]
+        content_blocks = last_assistant_message.content
+        text_parts = []
+        for block in content_blocks:
+            if block.type == "text":
+                text_parts.append(block.text.value)
 
-        # Собираем все ответы ассистента в одну строку, если они есть, иначе выводим сообщение об отсутствии ответа
-        response = "\n".join(response_texts) if response_texts else "Нет ответа от ассистента."
-        await status_msg.edit_text(response)  # Обновляем статусное сообщение на ответ ассистента
+        response_text = "\n".join(text_parts).strip()
+        if not response_text:
+            response_text = "Ответ ассистента пуст."
+
+        await status_msg.edit_text(response_text)
 
     except Exception as e:
         logger.error(e)  # Логируем ошибку
